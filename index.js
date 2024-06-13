@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
 const http = require('http');
 const WebSocket = require('ws');
@@ -9,14 +8,11 @@ const { EventEmitter } = require('events');
 const app = express();
 const server = http.createServer(app);
 
+app.use(cors());
 const wss = new WebSocket.Server({ server });
 
 const myEmitter = new EventEmitter();
 const client = new WebSocketClient();
-
-app.use(cors());
-
-
 myEmitter.on('message', function (message) {
     let data;
     if (message.type === 'utf8') {
@@ -26,12 +22,47 @@ myEmitter.on('message', function (message) {
     }
     wss.clients.forEach(function each(client) {
         if (client.readyState === WebSocket.OPEN) {
-            console.log('Enviando a socket:', message.type, data.length);
             client.send(data);
         }
     });
 });
+const clients = new Set();
 
+wss.on("connection", ws => {
+    console.log("New client connected");
+    clients.add(ws);
+
+    // Enviar mensajes predefinidos solo cuando se conecta un nuevo cliente
+    ws.send(JSON.stringify(primerMensaje));
+    ws.send(JSON.stringify(segundoMensaje));
+    ws.send(JSON.stringify(tercerMensaje));
+    ws.send(JSON.stringify(cuartoMensaje));
+
+    ws.on("message", data => {
+        console.log(`Client has sent us: ${data}`);
+    });
+
+    ws.on("close", () => {
+        console.log("Client disconnected");
+        clients.delete(ws);
+    });
+
+    ws.onerror = function () {
+        console.log("Some error occurred");
+    };
+});
+
+// Reenviar mensajes predefinidos a los clientes reconectados
+wss.on('connection', ws => {
+    clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(primerMensaje));
+            client.send(JSON.stringify(segundoMensaje));
+            client.send(JSON.stringify(tercerMensaje));
+            client.send(JSON.stringify(cuartoMensaje));
+        }
+    });
+});
 client.on('connectFailed', function (error) {
     console.log('Connect Error:', error.toString());
 });
@@ -87,6 +118,8 @@ const cuartoMensaje = {
 
 wss.on("connection", ws => {
     console.log("New client connected");
+
+    // Enviar mensajes predefinidos solo cuando se conecta un nuevo cliente
     ws.send(JSON.stringify(primerMensaje));
     ws.send(JSON.stringify(segundoMensaje));
     ws.send(JSON.stringify(tercerMensaje));
@@ -105,7 +138,7 @@ wss.on("connection", ws => {
     };
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
