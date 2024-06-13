@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 const http = require('http');
 const WebSocket = require('ws');
 const WebSocketClient = require('websocket').client;
@@ -7,13 +8,14 @@ const { EventEmitter } = require('events');
 
 const app = express();
 const server = http.createServer(app);
+
 const wss = new WebSocket.Server({ server });
 
 const myEmitter = new EventEmitter();
 const client = new WebSocketClient();
 
-// Servir archivos estáticos desde la carpeta 'public'
-app.use(express.static(path.join(__dirname)));
+app.use(cors());
+
 
 myEmitter.on('message', function (message) {
     let data;
