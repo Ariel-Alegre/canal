@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <script src="https://stream.rcncdn.com/h2live/player/4.13.0/nanoplayer.min.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+        #RCNPlayer {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div id="RCNPlayer"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var playerID = "RCNPlayer";
+            var players = {};
+
+            players[playerID] = new NanoPlayer(playerID);
+
+            var config = {
+                source: {
+                    h5live: {
+                        server: {
+                            websocket: 'wss://ws-west7.betpredatorvideos.vip'
+                        },
+                        rtmp: {
+                            url: "rtmp://",
+                            streamname: "tvg_hd_fm_2200?tkhash=ttjAAhctdOXA-7VcjrFhLcbmRf1qujvQHttOcSbZbag=&tkendtime=1710123995&cust=TVG&stream=tvg_mbr&hd=1&user="
+                        },
+                        params: {
+                            h: "R5EOnJohCPOAafXu7OiI1w",
+                            e: "1710123995"
+                        }
+                    }
+                },
+                playback: {
+                    autoplay: true,
+                    automute: true,
+                    muted: false,
+                    flashplayer: "flash/nano.player.swf",
+                    allowSafariHlsFallback: true,
+                    latencyControlMode: "fastadaptive",
+                },
+                style: {
+                    width: "100%",
+                    height: "100%",
+                    scaling: "fill",
+                    controls: true,
+                    displayMutedAutoplay: true,
+                },
+                events: {
+                    onReady: onReady,
+                    onPlay: onPlay,
+                    onPause: onPause,
+                    onLoading: onLoading,
+                    onStartBuffering: onStartBuffering,
+                    onStopBuffering: onStopBuffering,
+                    onError: onError,
+                    onStats: onStats,
+                    onMetaData: onMetaData,
+                    onMute: onMute,
+                    onUnmute: onUnmute,
+                    onVolumeChange: onVolumeChange,
+                    onStreamInfo: onStreamInfo,
+                    onWarning: onWarning,
+                    onDestroy: onDestroy,
+                }
+            };
+
+            players[playerID].setup(config).then(
+                function (config) {
+                    console.log('Player setup complete');
+                },
+                function (error) {
+                    console.error('Error setting up player:', error);
+                }
+            );
+
+            function onReady(event) {
+                console.log('Player is ready');
+            }
+
+            function onPlay(event) {
+                console.log('Playing');
+            }
+
+            function onPause(event) {
+                console.log('Paused');
+            }
+
+            function onLoading(event) {
+                console.log('Loading');
+            }
+
+            function onStartBuffering(event) {
+                console.log('Buffering started');
+            }
+
+            function onStopBuffering(event) {
+                console.log('Buffering stopped');
+            }
+
+            function onError(event) {
+                console.log('Error:', event);
+            }
+
+            function onStats(event) {
+               
+            }
+
+            function onMetaData(event) {
+                console.log('MetaData:', event);
+            }
+
+            function onMute(event) {
+                console.log('Muted');
+            }
+
+            function onUnmute(event) {
+                console.log('Unmuted');
+            }
+
+            function onVolumeChange(event) {
+                console.log('Volume changed:', event);
+            }
+
+            function onStreamInfo(event) {
+                console.log('Stream info:', event);
+            }
+
+            function onWarning(event) {
+                console.log('Warning:', event);
+            }
+
+            function onDestroy(event) {
+                console.log('Player destroyed');
+            }
+        });
+    </script>
+</body>
+</html>
