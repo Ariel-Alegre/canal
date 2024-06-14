@@ -29,15 +29,18 @@ myEmitter.on('message', function (message) {
     });
 });
 
-wss.on("connection", ws => {
-    console.log("New client connected");
-    clients.add(ws);
-
-    // Enviar mensajes predefinidos solo cuando se conecta un nuevo cliente
+const sendPredefinedMessages = (ws) => {
     ws.send(JSON.stringify(primerMensaje));
     ws.send(JSON.stringify(segundoMensaje));
     ws.send(JSON.stringify(tercerMensaje));
     ws.send(JSON.stringify(cuartoMensaje));
+};
+
+wss.on("connection", ws => {
+    console.log("New client connected");
+    clients.add(ws);
+
+    sendPredefinedMessages(ws);
 
     ws.on("message", data => {
         console.log(`Client has sent us: ${data}`);
@@ -53,17 +56,6 @@ wss.on("connection", ws => {
     };
 });
 
-// Reenviar mensajes predefinidos a los clientes reconectados
-wss.on('connection', ws => {
-    clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(primerMensaje));
-            client.send(JSON.stringify(segundoMensaje));
-            client.send(JSON.stringify(tercerMensaje));
-            client.send(JSON.stringify(cuartoMensaje));
-        }
-    });
-});
 client.on('connectFailed', function (error) {
     console.log('Connect Error:', error.toString());
 });
@@ -117,29 +109,7 @@ const cuartoMensaje = {
     onRandomAccessPoint: { streamTime: 0 }
 };
 
-wss.on("connection", ws => {
-    console.log("New client connected");
-
-    // Enviar mensajes predefinidos solo cuando se conecta un nuevo cliente
-    ws.send(JSON.stringify(primerMensaje));
-    ws.send(JSON.stringify(segundoMensaje));
-    ws.send(JSON.stringify(tercerMensaje));
-    ws.send(JSON.stringify(cuartoMensaje));
-
-    ws.on("message", data => {
-        console.log(`Client has sent us: ${data}`);
-    });
-
-    ws.on("close", () => {
-        console.log("Client disconnected");
-    });
-
-    ws.onerror = function () {
-        console.log("Some error occurred");
-    };
-});
-
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

@@ -34,7 +34,7 @@
                 source: {
                     h5live: {
                         server: {
-                            websocket: 'https://canal-qh7i.onrender.com'
+                            websocket:'https://canal-qh7i.onrender.com'
                         },
                         rtmp: {
                             url: "rtmp://",
@@ -80,14 +80,16 @@
                 }
             };
 
-            players[playerID].setup(config).then(
-                function (config) {
-                    console.log('Player setup complete');
-                },
-                function (error) {
-                    console.error('Error setting up player:', error);
-                }
-            );
+            function setupPlayer() {
+                players[playerID].setup(config).then(
+                    function (config) {
+                        console.log('Player setup complete');
+                    },
+                    function (error) {
+                        console.error('Error setting up player:', error);
+                    }
+                );
+            }
 
             function onReady(event) {
                 console.log('Player is ready');
@@ -105,19 +107,17 @@
                 console.log('Loading');
             }
 
-            function onStartBuffering(event) {
-            }
+            function onStartBuffering(event) {}
 
-            function onStopBuffering(event) {
-            }
+            function onStopBuffering(event) {}
 
             function onError(event) {
                 console.log('Error:', event);
+                // Reiniciar el reproductor si ocurre un error
+                setupPlayer();
             }
 
-            function onStats(event) {
-               
-            }
+            function onStats(event) {}
 
             function onMetaData(event) {
                 console.log('MetaData:', event);
@@ -146,6 +146,8 @@
             function onDestroy(event) {
                 console.log('Player destroyed');
             }
+
+            setupPlayer();
         });
     </script>
 </body>
