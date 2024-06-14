@@ -13,6 +13,8 @@ const wss = new WebSocket.Server({ server });
 
 const myEmitter = new EventEmitter();
 const client = new WebSocketClient();
+const clients = new Set();
+
 myEmitter.on('message', function (message) {
     let data;
     if (message.type === 'utf8') {
@@ -26,7 +28,6 @@ myEmitter.on('message', function (message) {
         }
     });
 });
-const clients = new Set();
 
 wss.on("connection", ws => {
     console.log("New client connected");
