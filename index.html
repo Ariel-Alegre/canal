@@ -27,14 +27,14 @@
         document.addEventListener("DOMContentLoaded", function () {
             var playerID = "RCNPlayer";
             var players = {};
-
+    
             players[playerID] = new NanoPlayer(playerID);
-
+    
             var config = {
                 source: {
                     h5live: {
                         server: {
-                            websocket:'https://canal-qh7i.onrender.com'
+                            websocket: 'https://canal-qh7i.onrender.com/'
                         },
                         rtmp: {
                             url: "rtmp://",
@@ -79,76 +79,75 @@
                     onDestroy: onDestroy,
                 }
             };
-
-            function setupPlayer() {
-                players[playerID].setup(config).then(
-                    function (config) {
-                        console.log('Player setup complete');
-                    },
-                    function (error) {
-                        console.error('Error setting up player:', error);
-                    }
-                );
-            }
-
+    
+            players[playerID].setup(config).then(
+                function (config) {
+                    console.log('Player setup complete');
+                },
+                function (error) {
+                    console.error('Error setting up player:', error);
+                }
+            );
+    
             function onReady(event) {
                 console.log('Player is ready');
             }
-
+    
             function onPlay(event) {
                 console.log('Playing');
             }
-
+    
             function onPause(event) {
                 console.log('Paused');
             }
-
+    
             function onLoading(event) {
                 console.log('Loading');
             }
-
-            function onStartBuffering(event) {}
-
-            function onStopBuffering(event) {}
-
+    
+            function onStartBuffering(event) {
+            }
+    
+            function onStopBuffering(event) {
+            }
+    
             function onError(event) {
                 console.log('Error:', event);
-                // Reiniciar el reproductor si ocurre un error
-                setupPlayer();
             }
-
-            function onStats(event) {}
-
+    
+            function onStats(event) {
+               
+            }
+    
             function onMetaData(event) {
                 console.log('MetaData:', event);
             }
-
+    
             function onMute(event) {
                 console.log('Muted');
             }
-
+    
             function onUnmute(event) {
                 console.log('Unmuted');
             }
-
+    
             function onVolumeChange(event) {
                 console.log('Volume changed:', event);
             }
-
+    
             function onStreamInfo(event) {
                 console.log('Stream info:', event);
             }
-
+    
             function onWarning(event) {
                 console.log('Warning:', event);
             }
-
+    
             function onDestroy(event) {
                 console.log('Player destroyed');
             }
-
-            setupPlayer();
         });
     </script>
+    
 </body>
 </html>

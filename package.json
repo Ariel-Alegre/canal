@@ -16,8 +16,5 @@
     "https": "^1.0.0",
     "websocket": "^1.0.35",
     "ws": "^8.8.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.3"
   }
 }

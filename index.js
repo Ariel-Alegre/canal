@@ -4,6 +4,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const WebSocketClient = require('websocket').client;
 const { EventEmitter } = require('events');
+const WebSocketServer = require('ws');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,31 +17,33 @@ const client = new WebSocketClient();
 const clients = new Set();
 
 myEmitter.on('message', function (message) {
-    let data;
+    // rebimos datos del socket
+    var data;
     if (message.type === 'utf8') {
-        data = message.utf8Data;
+      //console.log("Received: '" + message.utf8Data + "'");
+      data = message.utf8Data;
     } else {
-        data = message.binaryData;
+      //console.log('receiving message', message.type, message.binaryData.length)
+      data = message.binaryData;
     }
+    //reenviamos cada mensaje a cada cliente conectado a nuestro servidor socket
     wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
-            client.send(data);
-        }
+      if (client.readyState === WebSocketServer.OPEN) {
+        console.log('enviando a socket', message.type, data.length)
+          client.send(data);
+      }
     });
-});
-
-const sendPredefinedMessages = (ws) => {
-    ws.send(JSON.stringify(primerMensaje));
-    ws.send(JSON.stringify(segundoMensaje));
-    ws.send(JSON.stringify(tercerMensaje));
-    ws.send(JSON.stringify(cuartoMensaje));
-};
+  });
 
 wss.on("connection", ws => {
     console.log("New client connected");
     clients.add(ws);
 
-    sendPredefinedMessages(ws);
+    // Enviar mensajes predefinidos solo cuando se conecta un nuevo cliente
+    ws.send(JSON.stringify(primerMensaje));
+    ws.send(JSON.stringify(segundoMensaje));
+    ws.send(JSON.stringify(tercerMensaje));
+    ws.send(JSON.stringify(cuartoMensaje));
 
     ws.on("message", data => {
         console.log(`Client has sent us: ${data}`);
@@ -56,6 +59,17 @@ wss.on("connection", ws => {
     };
 });
 
+// Reenviar mensajes predefinidos a los clientes reconectados
+wss.on('connection', ws => {
+    clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(primerMensaje));
+            client.send(JSON.stringify(segundoMensaje));
+            client.send(JSON.stringify(tercerMensaje));
+            client.send(JSON.stringify(cuartoMensaje));
+        }
+    });
+});
 client.on('connectFailed', function (error) {
     console.log('Connect Error:', error.toString());
 });
@@ -73,7 +87,9 @@ client.on('connect', function (connection) {
     });
 });
 
-client.connect('wss://ws-west7.betpredatorvideos.vip');
+if (!client.connected) {
+    client.connect('wss://ws-west7.betpredatorvideos.vip');
+}
 
 // Mensajes predefinidos
 const primerMensaje = {
@@ -109,7 +125,29 @@ const cuartoMensaje = {
     onRandomAccessPoint: { streamTime: 0 }
 };
 
-const PORT = process.env.PORT || 3002;
+wss.on("connection", ws => {
+    console.log("New client connected");
+
+    // Enviar mensajes predefinidos solo cuando se conecta un nuevo cliente
+    ws.send(JSON.stringify(primerMensaje));
+    ws.send(JSON.stringify(segundoMensaje));
+    ws.send(JSON.stringify(tercerMensaje));
+    ws.send(JSON.stringify(cuartoMensaje));
+
+    ws.on("message", data => {
+        console.log(`Client has sent us: ${data}`);
+    });
+
+    ws.on("close", () => {
+        console.log("Client disconnected");
+    });
+
+    ws.onerror = function () {
+        console.log("Some error occurred");
+    };
+});
+
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
